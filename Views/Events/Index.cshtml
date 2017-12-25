@@ -1,0 +1,594 @@
+﻿@*индекс для Events*@
+@using PagedList
+@using PagedList.Mvc
+@model DivisionWebGlobal.Models.Data.EventViewModel
+
+@{
+    ViewBag.Title = "Личный кабинет собственника системы автоматизации DIVISION";
+    ViewBag.ObjectSection = "Информация о собственнике и системе автоматизации DIVISION";
+    ViewBag.TechSupportSection = "Техническая поддержка";
+    ViewBag.UserInfo = "Данные о собственнике";
+    ViewBag.DeviceInfo = "Данные о системе автоматизации DIVISION";
+    ViewBag.ConfigurationSection = "Конфигурация системы автоматизации DIVISION";
+    ViewBag.ConfigurationTable = "Настроенные в конфигурации устройства";
+    ViewBag.ExternalTable = "Подключенные устройства";
+    ViewBag.AddressInfo = "Положение на карте";
+}
+
+<link href="~/Content/UserStyles.css" rel="stylesheet" type="text/css" />
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
+<link href="~/Content/maps.css" rel="stylesheet" text="text/css" />
+<link href="https://openlayers.org/en/v4.2.0/css/ol.css" rel="stylesheet" type="text/css">
+    
+    <h2>@ViewBag.Title</h2>
+        <div class="row">
+
+            <nav class="col-lg-2 well" id="leftMenu" @*data-spy="affix" data-offset-top="10"*@>
+                <ul class="nav nav-pills nav-stacked" style="padding: 1px 0px;" id="sidebar">
+                    <li class="disabled">Меню ЛК</li>
+                    <!-- TODO отображать количество сообщений в системе-->
+                    <li class="active">     <a href="@Url.Action("Index", "Events")">   <span class="glyphicon glyphicon-envelope">   </span>Значимые сообщения<span class="badge badge-info"></span></a></li>
+                    <li>                    <a href="#object-info">                     <span class="glyphicon glyphicon-home">       </span>Информация по объекту</a></li> 
+                    <li>                    <a href="#tech-support">                    <span class="glyphicon glyphicon-user">       </span>Техническая поддержка</a></li>
+                    <li>                    <a href="#configuration-section">           <span class="glyphicon glyphicon-cog">        </span>Конфигурация системы</a></li>
+                    <li>                    <a href="#geolocation-section">             <span class="glyphicon glyphicon-map-marker">  </span>Положение на карте</a></li>
+                    <li>                    <a href="#tech-support">                    <span class="glyphicon glyphicon-camera">     </span>Удаленный видеопросмотр</a></li>
+                </ul>
+            </nav>
+
+
+            <div class="col-lg-10">
+                <section id="events">
+                    <table class="table table-bordered table-striped table-hover table-responsive">
+                        <tr>
+                            <th>
+                                @Html.Label("", "IP адрес")
+                            </th>
+                            <th>
+                                @Html.Label("", "Время")
+                            </th>
+                            <th>
+                                @Html.Label("", "Класс события")
+                            </th>
+                            <th>
+                                @Html.Label("", "Событие")
+                            </th>
+                            <th>
+                                @Html.Label("", "Описание события")
+                            </th>
+                            <th></th>
+                        </tr>
+
+                        @foreach (var item in Model.Events)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.DvHead.Ipaddress)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Time)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.EventType)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.EventOriginal)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.EventDecrypt)
+                                </td>
+                                <td>
+                                    @Html.ActionLink("Подробности", "Details", new { id = item.Id })
+                                </td>
+                            </tr>
+                        }
+                    </table>
+
+                    Страница @(Model.Events.PageCount < Model.Events.PageNumber ? 0 : Model.Events.PageNumber) из @Model.Events.PageCount
+
+                    @Html.PagedListPager(Model.Events, page => Url.Action("Index", new { page, Model.DvHead.Id }))
+                </section>
+
+                <section id="object-info">
+                    <hr />
+                    <h4>@ViewBag.ObjectSection</h4>
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <h5>@ViewBag.UserInfo</h5>
+                            <dl class="dl-horizontal">
+                                <dt>
+                                    @Html.DisplayNameFor(model => model.DvHead.OwnerName)
+                                </dt>
+                                <dd>
+                                    @Html.DisplayFor(model => model.DvHead.OwnerName)
+                                </dd>
+
+                                <dt>
+                                    @Html.DisplayNameFor(model => model.DvHead.PlaceAddress)
+                                </dt>
+                                <dd>
+                                    @Html.DisplayFor(model => model.DvHead.PlaceAddress)
+                                </dd>
+                                <dt>
+                                    @Html.DisplayNameFor(model => model.DvHead.SerialNumber)
+                                </dt>
+                                <dd>
+                                    @Html.DisplayFor(model => model.DvHead.SerialNumber)
+                                </dd>
+                                <dt>
+                                    @Html.DisplayNameFor(model => model.DvHead.Ipaddress)
+                                </dt>
+                                <dd>
+                                    @Html.DisplayFor(model => model.DvHead.Ipaddress)
+                                </dd>
+                                <dt>
+                                    @Html.DisplayNameFor(model => model.DvHead.Port)
+                                </dt>
+                                <dd>
+                                    @Html.DisplayFor(model => model.DvHead.Port)
+                                </dd>
+                                <dt>
+                                    @Html.DisplayNameFor(model => model.DvHead.Comment)
+                                </dt>
+                                <dd>
+                                    @Html.DisplayFor(model => model.DvHead.Comment)
+                                </dd>
+                            </dl>
+                        </div>
+                        <div class="col-lg-6">
+                            <h5>@ViewBag.DeviceInfo</h5>
+                            <dl class="dl-horizontal">
+                                <dt>
+                                    @Html.DisplayNameFor(model => model.DvHeadState.HeadTime)
+                                </dt>
+                                <dd>
+                                    @Html.DisplayFor(model => model.DvHeadState.HeadTime)
+                                </dd>
+                                <dt>
+                                    @Html.DisplayNameFor(model => model.DvHeadState.Temperature)
+                                </dt>
+                                <dd>
+                                    @Html.DisplayFor(model => model.DvHeadState.Temperature)
+                                </dd>
+                                <dt>
+                                    @Html.DisplayNameFor(model => model.DvHeadState.Voltage)
+                                </dt>
+                                <dd>
+                                    @Html.DisplayFor(model => model.DvHeadState.Voltage)
+                                </dd>
+                                <dt>
+                                    @Html.DisplayNameFor(model => model.DvHeadState.Status)
+                                </dt>
+                                @if (Model.DvHeadState.Status == true)
+                                {
+                                    <dd>ОК</dd>
+                                }
+                                else
+                                {
+                                    <dd>Не на связи</dd>
+                                }
+                            </dl>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="tech-support">
+                    <hr />
+                    <h4>@ViewBag.TechSupportSection</h4>
+                    <div class="row">
+                        <dl class="dl-horizontal">
+                            <dt>
+                                @Html.Label("IngeneerFio", "Ведущий инженер")
+                            </dt>
+                            <dd>
+                                Иванов Иван Иванович
+                            </dd>
+                            <dt>
+                                @Html.Label("ContactNumber", "Контактный телефон")
+                            </dt>
+                            <dd>
+                                298-76-54
+                            </dd>
+                            <dt>
+                                @Html.Label("Email", "Email техподдержки")
+                            </dt>
+                            <dd>
+                                <a href="mailto:#">ivanov@test.com</a>
+                            </dd>
+                        </dl>
+                    </div>
+                </section>
+
+                <section id="configuration-section">
+                    <hr />
+                    <h4>@ViewBag.ConfigurationSection</h4>
+                    <div class="row">
+                        <div class="col-lg-7">
+                            <h5>@ViewBag.ConfigurationTable</h5>
+                            <table class="table table-bordered table-striped table-hover table-responsive">
+                                <tr>
+                                    <th>
+                                        @Html.Label("", "№")
+                                    </th>
+                                    <th>
+                                        @Html.Label("", "Устройство")
+                                    </th>
+                                    <th>
+                                        @Html.Label("", "Адрес")
+                                    </th>
+                                    <th>
+                                        @Html.Label("", "Порт")
+                                    </th>
+                                    <th>
+                                        @Html.Label("", "Скан.")
+                                    </th>
+                                    <th>
+                                        @Html.Label("", "Статус устр-ва")
+                                    </th>
+                                    <th>
+                                        @Html.Label("", "Неответ")
+                                    </th>
+                                    <th>
+                                        @Html.Label("", "T неответа")
+                                    </th>
+                                </tr>
+
+                                @{int number = 0; }
+                                @foreach (var item in Model.ConfigurationTable)
+                                {
+                                    number++;
+                                    <tr>
+                                        <td>@number</td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Type)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Address)
+                                        </td>
+
+                                        @if (item.Port == 0)
+                                        {
+                                            <td>***</td>
+                                        }
+                                        else
+                                        {
+                                            <td>@Html.DisplayFor(modelItem => item.Port)</td>
+                                        }
+
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.StateAfterScan)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.FatalErrorFlag)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.ErrorCount)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.LastErrorDate)
+                                        </td>
+                                    </tr>
+                                }
+                            </table>
+                        </div>
+
+                        <div class="col-lg-5">
+                            <h5>@ViewBag.ExternalTable</h5>
+                            <table class="table table-bordered table-striped table-hover table-responsive">
+                                <tr>
+                                    <th>
+                                        @Html.Label("", "№")
+                                    </th>
+                                    <th>
+                                        @Html.Label("", "Устройство")
+                                    </th>
+                                    <th>
+                                        @Html.Label("", "Адрес")
+                                    </th>
+                                    <th>
+                                        @Html.Label("", "Порт")
+                                    </th>
+                                </tr>
+
+                                @{number = 0;}
+                                @foreach (var item in Model.ExternalTable)
+                                {
+                                    number++;
+                                    <tr>
+                                        <td>@number</td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Type)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Address)
+                                        </td>
+
+                                        @if (item.Port == 0)
+                                        {
+                                            <td>***</td>
+                                        }
+                                        else
+                                        {
+                                            <td>@Html.DisplayFor(modelItem => item.Port)</td>
+                                        }
+                                    </tr>
+                                }
+                            </table>
+
+                        </div>
+                    </div>
+                </section>
+
+                <section id="geolocation-section">
+                    <hr />
+                    <h4>@ViewBag.AddressInfo</h4>
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <div class="tree" id="layertree">
+                            </div>
+                        </div>
+                        <div class="col-lg-9">
+                            <div id="map" class="map">
+                                <div id="popup"></div>
+                                <div style="display: none;">
+                                    <!-- Clickable label for Object Under Security -->
+                                    <a class="overlay" id="security" target="_blank" href="http://techno2000.ru/smart/po/opisanie-i-sostav-sistemi/">@Model.DvHead.OwnerName</a>
+                                    <!-- Popup -->
+                                    <div id="popup" title="@Model.DvHead.OwnerName"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </section>
+
+            </div>
+
+        </div>
+
+
+
+
+    @section Scripts {
+        @*openlayers 4*@
+        <script src="https://openlayers.org/en/v4.2.0/build/ol.js" type="text/javascript"></script>
+        <script>
+
+            // карта
+            var map;
+
+            /**
+             * Build a tree layer from the map layers with visible and opacity
+             * options.
+             *
+             * param {type} layer
+             * returns {String}
+             */
+            function buildLayerTree(layer) {
+                var elem;
+                var name = layer.get('name') ? layer.get('name') : "Group";
+                if (layer.name == 'Карта') return;
+                var div = "<li data-layerid='" + name + "'>" +
+                    "<span><i class='glyphicon glyphicon-picture'></i> " + layer.get('name') + "</span>" +
+                    "<i class='glyphicon glyphicon-check'></i> ";
+                    //"<input style='width:80px;' class='opacity' type='text' value='' data-slider-min='0' data-slider-max='1' data-slider-step='0.1' data-slider-tooltip='hide'>";
+                if (layer.getLayers) {
+                    var sublayersElem = '';
+                    var layers = layer.getLayers().getArray(),
+                        len = layers.length;
+                    for (var i = len - 1; i >= 0; i--) {
+                        sublayersElem += buildLayerTree(layers[i]);
+                    }
+                    elem = div + " <ul>" + sublayersElem + "</ul></li>";
+                } else {
+                    elem = div + " </li>";
+                }
+                return elem;
+            }
+
+            /**
+             * Initialize the tree from the map layers
+             * returns {undefined}
+             */
+            function initializeTree() {
+
+                var elem = buildLayerTree(map.getLayerGroup());
+                $('#layertree').empty().append(elem);
+
+                $('.tree li:has(ul)').addClass('parent_li').find(' > span').attr('title', 'Свернуть дерево');
+                $('.tree li.parent_li > span').on('click', function (e) {
+                    var children = $(this).parent('li.parent_li').find(' > ul > li');
+                    if (children.is(":visible")) {
+                        children.hide('fast');
+                        $(this).attr('title', 'Развернуть дерево').find(' > i').addClass('glyphicon-plus').removeClass('glyphicon-minus');
+                    } else {
+                        children.show('fast');
+                        $(this).attr('title', 'Свернуть дерево').find(' > i').addClass('glyphicon-minus').removeClass('glyphicon-plus');
+                    }
+                    e.stopPropagation();
+                });
+            }
+
+            /**
+             * Finds recursively the layer with the specified key and value.
+             * param {ol.layer.Base} layer
+             * param {String} key
+             * param {any} value
+             * returns {ol.layer.Base}
+             */
+            function findBy(layer, key, value) {
+
+                if (layer.get(key) === value) {
+                    return layer;
+                }
+
+                // Find recursively if it is a group
+                if (layer.getLayers) {
+                    var layers = layer.getLayers().getArray(),
+                        len = layers.length, result;
+                    for (var i = 0; i < len; i++) {
+                        result = findBy(layers[i], key, value);
+                        if (result) {
+                            return result;
+                        }
+                    }
+                }
+
+                return null;
+            }
+
+                // левое меню для выбора слоев на карте
+                var layerStamenTerrain = new ol.layer.Tile({
+                    source: new ol.source.Stamen({
+                        layer: 'terrain'
+                    }),
+                    name: 'Поверхность земли'
+                });
+                var layerOsm = new ol.layer.Tile({
+                    source: new ol.source.OSM(),
+                    name: 'Карта OpenStreetMap'
+                });
+
+                // позиция на карте
+                var iconObjectUnderSecurity = new ol.Feature({
+                    geometry: new ol.geom.Point(ol.proj.transform([@Model.Address.Longitude, @Model.Address.Latitude], 'EPSG:4326', 'EPSG:3857')),
+                    name: "@Model.DvHead.OwnerName"
+                });
+                // стиль охраняемого объекта на карте  TODO проверить корректность обработки клика на иконку
+                var iconObjectUnderSecurityStyle = new ol.style.Style({
+                    image: new ol.style.Icon(({
+                        anchor: [0.5, 46],
+                        anchorXUnits: 'fraction',
+                        anchorYUnits: 'pixels',
+                        src: 'https://openlayers.org/en/v4.2.0/examples/data/icon.png'
+                    }))
+                });
+                iconObjectUnderSecurity.setStyle(iconObjectUnderSecurityStyle);
+
+                var vectorSource = new ol.source.Vector({
+                    features: [iconObjectUnderSecurity]
+                });
+
+                var vectorLayer = new ol.layer.Vector({
+                    source: vectorSource,
+                    name: 'Объекты на карте'
+                });
+
+                map = new ol.Map({
+                    target: document.getElementById('map'),
+                    controls: [
+                        new ol.control.Zoom(),
+                        new ol.control.Rotate(),
+                        new ol.control.ScaleLine(),
+                        new ol.control.MousePosition({
+                            coordinateFormat: ol.coordinate.createStringXY(4),
+                            projection: 'EPSG:4326'
+                        })
+                    ],
+
+                    layers: [
+                        layerStamenTerrain,
+                        layerOsm,
+                        vectorLayer
+                    ],
+
+                    renderer: 'canvas',
+                    view: new ol.View({
+                        center: ol.proj.transform([@Model.Address.Longitude, @Model.Address.Latitude], 'EPSG:4326', 'EPSG:3857'),
+                        zoom: 14,
+                        maxResolution: 156543.0339, // check
+                        maxZoom: 18,
+                        minZoom: 10
+                    })
+                });
+                map.getLayerGroup().set('name', 'Карта');
+
+                var element = document.getElementById('popup');
+
+                var popup = new ol.Overlay({
+                    element: element,
+                    positioning: 'bottom-center',
+                    stopEvent: false,
+                    offset: [0, -50]
+                });
+                map.addOverlay(popup);
+
+                // display popup on click TODO!!
+                //map.on('click', function (evt) {
+                //    var feature = map.forEachFeatureAtPixel(evt.pixel,
+                //        function (feature) {
+                //            return feature;
+                //        });
+                //    if (feature) {
+                //        var coordinates = feature.getGeometry().getCoordinates();
+                //        popup.setPosition(coordinates);
+                //        $(element).popover({
+                //            'placement': 'top',
+                //            'html': true,
+                //            'content': feature.get('name')
+                //        });
+                //        $(element).popover('show');
+                //    } else {
+                //        $(element).popover('destroy');
+                //    }
+                //});
+
+                // change mouse cursor when over marker
+                map.on('pointermove', function (e) {
+                    if (e.dragging) {
+                        $(element).popover('destroy');
+                        return;
+                    }
+                    var pixel = map.getEventPixel(e.originalEvent);
+                    var hit = map.hasFeatureAtPixel(pixel);
+                    map.getTarget().style.cursor = hit ? 'pointer' : '';
+                });
+
+                initializeTree();
+
+                /*// Handle opacity slider control                              TODO: doesn't work
+                $('input.opacity').slider().on('slide', function (ev) {
+                    var layername = $(this).closest('li').data('layerid');
+                    var layer = findBy(map.getLayerGroup(), 'name', layername);
+
+                    layer.setOpacity(ev.value);
+                });*/
+
+                // Handle visibility control .glyphicon-check
+                $('i:not(.glyphicon-picture)').on('click', function () {
+                    var layername = $(this).closest('li').data('layerid');
+                    var layer = findBy(map.getLayerGroup(), 'name', layername);
+
+                    layer.setVisible(!layer.getVisible());
+
+                    if (layer.getVisible()) {
+                        $(this).removeClass('glyphicon-unchecked').addClass('glyphicon-check');
+                    } else {
+                        $(this).removeClass('glyphicon-check').addClass('glyphicon-unchecked');
+                    }
+                });
+
+
+            $(function () {
+
+                $("#sidebar").on("click", "li a", function (event) {
+                    $(".nav li.active").removeClass("active");
+
+                    var $parent = $(this).parent();
+                    $parent.addClass("active");
+                    e.preventDefault();
+                });
+
+                // надпись на карте TODO!!!
+                @*var pos = ol.proj.fromLonLat(@Model.Address.Longitude, @Model.Address.Latitude);
+                var securityLabel = new ol.Overlay({
+                    position: pos,
+                    element: document.getElementById('security')
+                });
+                map.addOverlay(securityLabel);*@
+
+
+            });
+        </script>
+    }
+

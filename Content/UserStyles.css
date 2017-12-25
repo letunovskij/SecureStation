@@ -1,0 +1,27 @@
+﻿h2, h4, h5 {
+    text-align: center;
+}
+
+.dl-horizontal dt {
+    white-space: normal;
+    max-width: 300px;
+    min-width: 250px;
+    margin-right: 10px;
+}
+
+.glyphicon {
+    margin-right: 5px;
+}
+
+.map {
+    height: 600px;/*650*/
+    width: 100%;
+}
+
+#security {
+    text-decoration: none;
+    color: white;
+    font-size: 11pt;
+    font-weight: bold;
+    text-shadow: black 0.1em 0.1em 0.2em;
+}

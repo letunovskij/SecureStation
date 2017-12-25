@@ -1,0 +1,86 @@
+﻿@*индекс для конфигов Configs*@
+@model IEnumerable<DivisionWebGlobal.Models.Data.Config>
+
+@{
+    ViewBag.Title = "Список охраняемых объектов";
+    ViewBag.Message = "Список охраняемых объектов, оснащенных системой автоматизации DIVISION";
+}
+
+<h2>@ViewBag.Message</h2>
+
+<p>
+    @Html.ActionLink("Добавить объект", "Create")
+</p>
+<table class="table">
+    <tr>
+
+        <th>
+            @Html.DisplayNameFor(model => model.OwnerName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.PlaceAddress)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.IsNeedToSend)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Ipaddress)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Port)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.SerialNumber)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Password)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Comment)
+        </th>
+        <th></th>
+        @*<th>
+            @Html.Label("", "Обработать")
+        </th>*@
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.OwnerName)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.PlaceAddress)
+        </td>
+        <td>
+            @if (item.IsNeedToSend) {
+                <span>Да</span>
+            } else {
+                <span>Нет</span>
+            }
+        </td>
+        @*<td>
+            @Html.DisplayFor(modelItem => item.IsNeedToSend)
+        </td>*@
+        <td>
+            @Html.DisplayFor(modelItem => item.Ipaddress)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Port)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.SerialNumber)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Password)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Comment)
+        </td>
+        <td>
+            @Html.ActionLink("Редактировать", "Edit", new { id = item.Id })
+        </td>
+    </tr>
+}
+
+</table>

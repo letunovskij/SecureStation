@@ -1,0 +1,59 @@
+﻿@model DivisionWebGlobal.Models.Data.Event
+
+@{
+    ViewBag.Title = "Детализация";
+    ViewBag.Message = "Тревожное сообщение";
+}
+
+<h2>@ViewBag.Title</h2>
+
+<div>
+    <h4>@ViewBag.Message</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.DvHead.Ipaddress)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.DvHead.Ipaddress)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Time)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Time)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.EventType)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.EventType)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.EventOriginal)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.EventOriginal)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.EventDecrypt)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.EventDecrypt)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @*@Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |*@
+    @Html.ActionLink("Назад к списку", "Index")
+</p>

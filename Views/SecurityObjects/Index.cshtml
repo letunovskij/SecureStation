@@ -1,0 +1,122 @@
+﻿@*индекс для SecurityOjects. Второй индекс. Отображается тогда, когда перешли на конкретный город*@
+@model DivisionWebGlobal.Models.ViewModel.SecurityObjectInfoViewModel
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Список тревожных охраняемых объектов";
+    ViewBag.SubtitleEvents = "Журнал тревожных событий";
+    ViewBag.SubtitleMatrix = "Матрица охраняемых объектов";
+}
+
+<h2>@ViewBag.Title</h2>
+<table class="table table-bordered table-striped table-hover table-responsive">
+    <tr>
+        <th>
+            @Html.Label("", "Адрес")
+        </th>
+        <th>
+            @Html.Label("", "Владелец")
+        </th>
+        <th>
+            @Html.Label("", "IP-адрес")
+        </th>
+        <th>
+            @Html.Label("", "Под охраной (Под охраной - если есть хотя бы один раздел, поставленный под охрану)")
+        </th>
+        <th>
+            @Html.Label("", "Тревожный (Тревожный - если есть хотя бы одно необработанное тревожное сообщение)")
+        </th>
+        <th>@Html.Label("", "Действия")</th>
+    </tr>
+
+    @foreach (var item in Model.Objects)
+    {
+        <tr style="border: 2px solid #428bca;">
+            <td>
+                @Html.DisplayFor(modelItem => item.PlaceAddress, new { @class = "form-control", @readonly = "readonly" })
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.OwnerName, new { @class = "form-control", @readonly = "readonly"})
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Ipaddress, new { @class="form-control", @readonly="readonly"})
+            </td>
+                @if (item.UnderSecurity > 0)
+                {
+                    <td сlass="info">Под охраной</td>
+                }
+                else
+                {
+                    <td class="success">Не под охраной</td>
+                }
+
+                @if (item.Alarm > 0)
+                {
+                    <td сlass="warning">Тревога</td>
+                }
+                else
+                {
+                    <td class="success">Нет тревог</td>
+                }
+            <td>
+
+                @if (item.Alarm > 0)
+                {
+                    @Html.ActionLink("Показать ТС", "ObjectCardIndex", "Events", new { id = item.Id, type = "all" },
+                            new { @class = "btn btn-danger", style = "margin-right:5px" })
+                    @*<button type="button" class="btn btn-danger"
+                onclick="location.href = '@Url.Action("ObjectCardIndex", "Events", new { id = item.Id })'">Перейти к тревожным сообщениям</button>*@
+                }
+                @*Переход к карточке объекта (тревожным сообщениям)*@
+                @*windows.location.href = '@Url.Action("Create", "User", new { id = item.Id })';*@
+
+            </td>
+
+        </tr>
+    }
+</table>
+<!-- TODO перенести в отдельный PartialView-->
+<h2>@ViewBag.SubtitleEvents</h2>
+<table class="table table-bordered table-striped table-hover table-responsive table-condensed">
+    <tr>
+        <th>
+            @Html.Label("", "Время")
+        </th>
+        <th>
+            @Html.Label("", "Адрес установки")
+        </th>
+        <th>
+            @Html.Label("", "ФИО владельца, IP адрес")
+        </th>
+        <th>
+            @Html.Label("", "Класс события")
+        </th>
+        <th>
+            @Html.Label("", "Описание события")
+        </th>
+    </tr>
+
+    @foreach (var item in Model.Events)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Time)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DvHead.PlaceAddress)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DvHead.FioIp)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EventType)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EventDecrypt)
+            </td>
+        </tr>
+    }
+</table>
+<!-- TODO обновлять список тревог по таймауту -->
+
+

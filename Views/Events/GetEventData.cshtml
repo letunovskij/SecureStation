@@ -1,0 +1,123 @@
+﻿@*Часть ObjectCardIndex. PartialView который обновляется при паджинации*@
+@using PagedList
+@using PagedList.Mvc
+@model DivisionWebGlobal.Models.Data.EventViewModel
+@*<meta http-equiv="refresh" content="3">*@
+
+@*Кнопки быстрого доступа*@
+<br>
+<div class="row" style="margin-left:1px;">
+    @Html.ActionLink("Обновить Тревожные Сообщения", "ObjectCardIndex", new { id = Model.DvHead.Id },
+                            new { @class = "btn btn-primary", style = "margin-right:5px; margin-bottom:5px" })
+
+    @*@Html.ActionLink("Показать все ТС", "ObjectCardIndex", new { id = Model.DvHead.Id, type = "all"},
+                            new { @class = "btn btn-primary", style = "margin-right:5px; margin-bottom:5px "})
+
+    @Html.ActionLink("Показать необработанные ТС", "ObjectCardIndex", new { id = Model.DvHead.Id, type = "crud" },
+                            new { @class = "btn btn-primary", style = "margin-right:5px; margin-bottom:5px" })*@
+</div>
+
+@*Таблица тревожных сообщений*@
+<div id="event-table-ajax">
+<table id="eventsTable" class="table table-bordered table-striped table-hover table-responsive">
+
+    <tr>
+        <th>
+            @Html.Label("", "Время")
+        </th>
+        <th>
+            @Html.Label("", "Адрес установки")
+        </th>
+        <th>
+            @Html.Label("", "ФИО владельца, IP-адрес")
+        </th>
+        <th>
+            @Html.Label("", "Класс события")
+        </th>
+        <th>
+            @Html.Label("", "Событие")
+        </th>
+        <th>
+            @Html.Label("", "Обработано")
+        </th>
+        <th>
+            @Html.Label("", "Действие")
+        </th>
+        <th>
+            @Html.Label("", "Обработка оператором")
+        </th>
+    </tr>
+    @foreach (var item in Model.Events)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Time)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DvHead.PlaceAddress)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DvHead.FioIp)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EventType)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EventDecrypt)
+            </td>
+            <!-- Отображать наличие тревоги -->
+            @if (item.Alarm > 0)
+            {
+                <td сlass="error">Не обработано</td>
+            }
+            else
+            {
+                <td class="success">Обработано</td>
+            }
+            <!-- Если есть тревога ее можно обработать -->
+            <td>
+                @if (item.Alarm > 0)
+                {
+                    <button type="button" class="btn btn-danger ts" id="iconEdit@(item.Id)" data-value="@(item.Id)" onclick="process(event, @(item.Id));">Обработать ТС</button>
+                }
+            </td>
+            <!-- Выбор оператора-->
+            <td>
+                @Html.DisplayFor(modelItem => item.ContinueActivity)
+            </td>
+
+        </tr>
+    }
+</table>
+    Страница @(Model.Events.PageCount < Model.Events.PageNumber ? 0 : Model.Events.PageNumber) из @Model.Events.PageCount
+
+    @Html.PagedListPager(Model.Events, page => Url.Action("ObjectCardIndex", new { page, Model.DvHead.Id, Model.Type }), PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(new AjaxOptions() { HttpMethod = "GET", UpdateTargetId = "unobtrusive" }))
+</div>
+
+
+
+
+
+        @*$(document).ready(function () {
+            setInterval(function () {
+                $.ajax({
+                    //url: @Url.Action("ObjectCardIndex", new { Model.Events.PageNumber, Model.DvHead.Id }), PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(new AjaxOptions() { HttpMethod = "GET", UpdateTargetId = "unobtrusive" }))
+                    url: '@Url.Action("ObjectCardIndex", new { Model.Events.PageNumber, Model.DvHead.Id})'
+                }).success(function(data) {
+                    //$("#someElement").html(data);
+                });
+            }, 5000);
+        }*@
+
+
+        @*$(document).ready(function () {
+            setInterval(function () {
+                $.ajax({
+                    url: '@Url.Action("ObjectCardIndex", new { Model.Events.PageNumber, Model.DvHead.Id })',
+                    success: function (data) {
+                        $("#event-table-ajax").html(data);
+                    }
+                });
+            }, 10000);
+        });*@
+    @*</script>*@

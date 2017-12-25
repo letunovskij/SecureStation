@@ -1,0 +1,171 @@
+﻿@*Индекс для SecurityObjects. Появляется первым, когда кликнули на кнопку пульт охраны*@
+@*@model IEnumerable<DivisionWebGlobal.Models.Data.CityViewModel>*@
+@model DivisionWebGlobal.Models.Data.SecurityObjectsViewModel
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Список охраняемых объектов";
+    ViewBag.SubtitleEvents = "Журнал тревожных событий";
+    ViewBag.SubtitleMatrix = "Матрица охраняемых объектов";
+}
+
+<h2>@ViewBag.Title</h2>
+<table class="table table-bordered table-striped table-hover table-responsive">
+    <tr>
+        <th>
+            @Html.Label("", "Область контроля")
+        </th>
+        <th>
+            @Html.Label("", "Всего объектов")
+        </th>
+        <th>
+            @Html.Label("", "Под охраной")
+        </th>
+        <th>
+            @Html.Label("", "Аварийные")
+        </th>
+        <th>
+            @Html.Label("", "Тревожные")
+        </th>
+        <th>
+            @Html.Label("", "Задолженность")
+        </th>
+        <th>
+            @Html.Label("", "Действие")
+        </th>
+    </tr>
+
+    @foreach (var item in Model.Cities)
+    {
+        <tr style="border: 2px solid #428bca;">
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                <span id="city-@(item.Name)-all">@Html.DisplayFor(modelItem => item.AllCount)</span>
+            </td>
+            <td>
+                <span id="city-@(item.Name)-umbrella">@Html.DisplayFor(modelItem => item.UmbrellasCount)</span>
+            </td>
+            <td>
+                <span id="city-@(item.Name)-crash">@Html.DisplayFor(modelItem => item.CrashsCount)</span>
+            </td>
+            <td>
+                <span id="city-@(item.Name)-alarm">@Html.DisplayFor(modelItem => item.AlarmsCount)</span>
+            </td>
+            <td>
+                <span id="city-@(item.Name)-debt">@Html.DisplayFor(modelItem => item.DebtsCount)</span>
+            </td>
+            <td><!-- TODO заменить заглушку на обращение к конкретному городу-->
+                <span id="city-@(item.Name)-btnalarm">
+                    @if (item.AlarmsCount > 0)
+                    {
+                        @Html.ActionLink("Перейти к тревожным объектам", "Index", "SecurityObjects", null,
+                            new { @class = "btn btn-danger", style = "margin-right:5px" })
+                    }
+                </span>
+            </td>
+        </tr>
+        foreach (var mkrnItem in item.Mkrns)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelMkrnItem => mkrnItem.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelMkrnItem => mkrnItem.AllCount)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelMkrnItem => mkrnItem.UmbrellasCount)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelMkrnItem => mkrnItem.CrashsCount)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelMkrnItem => mkrnItem.AlarmsCount)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelMkrnItem => mkrnItem.DebtsCount)
+                </td>
+            </tr>
+        }
+    }
+</table>
+    <!-- TODO перенести в отдельный PartialView-->
+<h2>@ViewBag.SubtitleEvents</h2>
+<table class="table table-bordered table-striped table-hover table-responsive table-condensed">
+    <tr>
+        <th>
+            @Html.Label("", "Время")
+        </th>
+        <th>
+            @Html.Label("", "Адрес установки")
+        </th>
+        <th>
+            @Html.Label("", "ФИО владельца, IP адрес")
+        </th>
+        <th>
+            @Html.Label("", "Класс события")
+        </th>
+        <th>
+            @Html.Label("", "Описание события")
+        </th>
+    </tr>
+
+    @foreach (var item in Model.Events)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Time)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DvHead.PlaceAddress)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DvHead.FioIp)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EventType)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EventDecrypt)
+            </td>
+        </tr>
+    }
+</table>
+
+@*TODO по таймауту слать ajax запрос на сервер*@
+
+@section Scripts {
+    <script>
+        // SecurityObjectController
+        $(document).ready(function () {
+            setInterval(function () {
+                var ajTest = $.ajax({
+                    url: '@Url.Action("UpdateAlarmEvents")',
+                    contentType: 'application/json'
+                }).done(function (res) {
+                    for (var i = 0; i < arguments.length; i++) {
+                        console.log(arguments[i] + " ");
+                    }
+                    if (res.Success) {
+                        // window.location.reload();
+                        // нарисовать кнопку если кнопки нет и изменить цифры в таблице
+                        var alarmButtonHtml = '@Html.ActionLink("Перейти к тревожным объектам", "Index", "SecurityObjects", null, new { @class = "btn btn-danger", style = "margin-right:5px"})';
+                        $("#city-Ростов-на-Дону-btnalarm").html(alarmButtonHtml);
+                    } else {
+                        // убрать кнопку если она не нарисована и изменить цифры в таблице
+                        $("#city-Ростов-на-Дону-btnalarm").html("");
+                    }
+                    // TODO пролетарский район и подсветка
+                    var test = $("#city-Ростов-на-Дону-alarm").val();
+                    $("#city-Ростов-на-Дону-alarm").text(res.AlarmRostov);
+                    $("#city-Ростов-на-Дону-umbrella").text(res.UnderSecurity_Rostov);
+                    $("#city-Ростов-на-Дону-all").text(res.AllRostov);
+                    var test2 = $("#city-Ростов-на-Дону-alarm").val();
+                });
+            }, 2000); // TODO сменить на 2 в реал тайме
+        });
+    </script>
+}
+

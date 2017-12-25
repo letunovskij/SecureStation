@@ -1,0 +1,50 @@
+﻿@model DivisionWebGlobal.Models.Data.HeadTable
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>HeadTable</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.DvHead.Ipaddress)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.DvHead.Ipaddress)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Time)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Time)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.ConfigurationTable)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ConfigurationTable)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.ConnectedTable)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ConnectedTable)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

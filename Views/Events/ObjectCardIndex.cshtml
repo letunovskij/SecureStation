@@ -1,0 +1,202 @@
+﻿@*Карточка тревожного объекта. На карточку тревожного объекта пользователь попадает, когда после выбора тревожного объекта в Index*@
+@*GetEventData является частью данной формы*@
+@using PagedList
+@using PagedList.Mvc
+@model DivisionWebGlobal.Models.Data.EventViewModel
+
+@{
+    ViewBag.Title = "Журнал тревожных сообщений";// "Карточка охраняемого объекта";
+    //AjaxOptions ajaxOptions = new AjaxOptions
+    //{
+    //    UpdateTargetId = "tableBody"
+    //};
+}
+
+
+<link href="~/Content/UserStyles.css" rel="stylesheet" type="text/css" />
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
+<link href="~/Content/maps.css" rel="stylesheet" text="text/css" />
+<link href="https://openlayers.org/en/v4.2.0/css/ol.css" rel="stylesheet" type="text/css">
+
+<h2>@ViewBag.Title [@Model.DvHead.OwnerName @Model.DvHead.PlaceAddress]</h2>
+<div class="row">
+    @*TODO сделать ajax во время паджинации*@
+    <div class="col-lg-10">
+        <section id="events">
+            <div id="unobtrusive">
+                @*@Html.Action("ObjectCardIndex", new { Model.Events.PageNumber, Model.DvHead.Id })*@
+                @Html.Partial("GetEventData")
+            </div>
+        </section>
+    </div>
+
+</div>
+
+@section Scripts {
+    <script>
+    // обработка оператором тревожных сообщений
+        function process(event, id) {
+            event.stopPropagation();
+            var eventId = id;//$(this).attr('data-value');
+            var headId = @Model.DvHead.Id;
+            var element1 = $(this)[0];
+
+            bootbox.confirm({
+                message: "Обработать тревожное сообщение?",
+                backdrop: false,
+                onEscape: false,
+                buttons: {
+                    confirm: {
+                        label: 'Обработать',
+                        className: 'btn-success'
+                    },
+                    cancel: {
+                        label: 'Не обрабатывать',
+                        className: 'btn-danger'
+                    }
+                },
+                callback: function (result) {
+                    var user = "@HttpContext.Current.User.Identity.Name";
+                    var operAction = "Оператор " + user + " не стал обрабатывать сообщение в ";
+                    if (result) {
+                        operAction = "Сообщение было обработано оператором " + user + " в ";
+                    }
+                    var currentdate = new Date();
+                    var dateTime = "" + currentdate.getDate() + "/"
+                        + (currentdate.getMonth() + 1) + "/"
+                        + currentdate.getFullYear() + ' '
+                        + currentdate.getHours() + ":"
+                        + currentdate.getMinutes() + ":"
+                        + currentdate.getSeconds();
+                    operAction += dateTime;
+
+                    var operatorChoise = {
+                        Choise: operAction,
+                        EventId: eventId,
+                        HeadId: headId                            // HeadId:  - TODO добавить передачу id DV-HEAD, когда множество объектов
+                        // можно получать id из информации о пользователе
+                    }
+
+                    $.ajax({
+                        type: "POST",
+                        data: JSON.stringify(operatorChoise),
+                        url: "/Events/SaveOperatorChoise",
+                        contentType: "application/json"
+                    }).done(function (res) {
+                        if (res.Success) {
+                            // временно просто обновляю страницу TODO реализовать все на клиенте, чтобы данные проходили только как JSON
+                            @*@Ajax.ActionLink("")*@
+                            window.location.reload();
+                        }
+                        else {
+                        }
+
+                        bootbox.alert({
+                            message: res.Message,
+                            backdrop: true,
+                            onEscape: true
+                        });
+                    });
+                    // TODOСрочно обработать сообщение в базе данных
+                    // Записать в БД: 1) Изменить тип тревожного сообщения на обработанное  +
+                    // 2) Если сообщений нет, то сделать объект нетревожным.
+                    // Не обрабатывется ситуаяция - под охраной объект или не под охраной
+                    // 3) Обновить веб-интерфейс. Требуется обновить статус сообщения
+
+
+                    //var id = $(this).attr('data-value');
+                    //alert('Тревога, id = ' + id + " eventId=" + eventId + "element.tagName = " + element1.tagName);
+                    // TODO: обработать ситуацию когда оператор добавляет "Отмена"
+                }
+            }); // end_bootbox_alert
+        } // end_process_on-click_event
+
+        // при открытии документа
+        $(function () {
+            // todo update knowledge in dom events
+            //fs();
+            //$(document).on('click', 'a', function () {
+            //    //fs();
+            //});
+
+            function fs() {
+                $('#eventsTable').on('click', '.ts', function (event) {
+                    event.stopPropagation();
+                    var eventId = $(this).attr('data-value');
+                    var headId = @Model.DvHead.Id;
+                    var element1 = $(this)[0];
+
+                    bootbox.confirm({
+                        message: "Обработать тревожное сообщение?",
+                        backdrop: false,
+                        onEscape: false,
+                        buttons: {
+                            confirm: {
+                                label: 'Обработать',
+                                className: 'btn-success'
+                            },
+                            cancel: {
+                                label: 'Не обрабатывать',
+                                className: 'btn-danger'
+                            }
+                        },
+                        callback: function (result) {
+                            var user = "@HttpContext.Current.User.Identity.Name";
+                            var operAction = "Оператор " + user + " не стал обрабатывать сообщение в ";
+                            if (result) {
+                                operAction = "Сообщение было обработано оператором " + user + " в ";
+                            }
+                            var currentdate = new Date();
+                            var dateTime = "" + currentdate.getDate() + "/"
+                                + (currentdate.getMonth() + 1) + "/"
+                                + currentdate.getFullYear() + '@@'
+                                + currentdate.getHours() + ":"
+                                + currentdate.getMinutes() + ":"
+                                + currentdate.getSeconds();
+                            operAction += dateTime;
+
+                            var operatorChoise = {
+                                Choise: operAction,
+                                EventId: eventId,
+                                HeadId: headId                            // HeadId:  - TODO добавить передачу id DV-HEAD, когда множество объектов
+                                // можно получать id из информации о пользователе
+                            }
+
+                            $.ajax({
+                                type: "POST",
+                                data: JSON.stringify(operatorChoise),
+                                url: "/Events/SaveOperatorChoise",
+                                contentType: "application/json"
+                            }).done(function (res) {
+                                if (res.Success) {
+                                    // временно просто обновляю страницу TODO реализовать все на клиенте, чтобы данные проходили только как JSON
+                                 @*@Ajax.ActionLink("")*@
+                                    window.location.reload();
+                                }
+                                else {
+                                }
+
+                                bootbox.alert({
+                                    message: res.Message,
+                                    backdrop: true,
+                                    onEscape: true
+                                });
+                            });
+                            // Срочно обработать сообщение в базе данных                            сделано в августе
+                            // Записать в БД: 1) Изменить тип тревожного сообщения на обработанное  +
+                            // 2) Если сообщений нет, то сделать объект нетревожным.
+                            // Не обрабатывется ситуаяция - под охраной объект или не под охраной
+                            // 3) Обновить веб-интерфейс. Требуется обновить статус сообщения
+
+
+                            //var id = $(this).attr('data-value');
+                            //alert('Тревога, id = ' + id + " eventId=" + eventId + "element.tagName = " + element1.tagName);
+                            // TODO: обработать ситуацию когда оператор добавляет "Отмена"
+
+                        }
+                    }); // end_bootbox_alert
+                }); // end_process_on-click_event
+            }
+        }); // end_on-ready
+    </script>
+}
